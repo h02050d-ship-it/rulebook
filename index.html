@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4a6741">
+<title>社内ルールブック｜林材木店</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<style>
+:root{
+  --bg:#f5f1e8; --card:#fffdf8; --ink:#2e2a22; --sub:#8a8171; --line:#e5ddcc;
+  --accent:#4a6741; --accent2:#3d5636; --danger:#b3502e;
+  --chip:#efe9da; --hl:#f3efe2;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:96px}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:16px}
+
+/* ===== ヘッダー ===== */
+header{position:sticky;top:0;z-index:30;background:var(--accent);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px rgba(46,42,34,.18)}
+header .ttl{font-size:16px;font-weight:800;letter-spacing:.04em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .ttl small{display:block;font-size:10px;font-weight:600;opacity:.75;letter-spacing:.1em}
+.hbtn{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:700;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.hbtn:active{background:rgba(255,255,255,.28)}
+#srcBadge{border:0;background:rgba(0,0,0,.18);color:#d8e6d2;border-radius:99px;padding:5px 10px;font-size:10.5px;font-weight:700}
+#srcBadge.err{color:#ffd9c9}
+
+/* ===== 検索・フィルタ ===== */
+.tools{position:sticky;top:calc(env(safe-area-inset-top) + 54px);z-index:25;background:linear-gradient(var(--bg) 82%,rgba(245,241,232,0));padding:10px 14px 8px}
+.searchwrap{position:relative}
+.searchwrap .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.45;pointer-events:none}
+#q{width:100%;padding:12px 38px 12px 36px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);outline:none;box-shadow:0 1px 4px rgba(46,42,34,.05)}
+#q:focus{border-color:var(--accent)}
+#qClear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:16px;padding:6px;color:var(--sub);display:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:9px 2px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1.5px solid var(--line);background:var(--chip);color:var(--ink);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:700;white-space:nowrap;flex:0 0 auto}
+.chip .n{font-size:10.5px;opacity:.55;margin-left:3px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.on .n{opacity:.8}
+.subrow{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 0}
+#count{font-size:11px;color:var(--sub)}
+.deadtgl{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--sub);user-select:none}
+.deadtgl input{width:15px;height:15px;accent-color:var(--accent)}
+
+/* ===== カード ===== */
+main{padding:4px 14px 0;max-width:760px;margin:0 auto}
+.sechead{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.06em;margin:16px 2px 8px;display:flex;align-items:center;gap:6px}
+.sechead::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--cc,#9aa);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 5px rgba(46,42,34,.06);cursor:pointer;transition:box-shadow .15s}
+.card:active{box-shadow:0 1px 2px rgba(46,42,34,.1)}
+.card.dead{opacity:.55}
+.card .top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.badge{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--cc,#9aa);color:#fff;letter-spacing:.03em}
+.tgt{font-size:11px;font-weight:700;color:var(--accent2);background:var(--hl);border:1px solid var(--line);border-radius:99px;padding:3px 9px}
+.pin{font-size:12px}
+.deadmark{font-size:10.5px;font-weight:800;color:#fff;background:var(--danger);border-radius:99px;padding:3px 8px}
+.card h3{font-size:15px;font-weight:800;line-height:1.45}
+.card .body{margin-top:7px;font-size:13.5px;line-height:1.55;background:var(--hl);border-radius:9px;padding:8px 11px}
+.card .det{display:none;margin-top:9px}
+.card.open .det{display:block}
+.det .row{font-size:12.5px;line-height:1.6;margin-bottom:6px}
+.det .row b{display:inline-block;font-size:11px;color:var(--sub);margin-right:6px;font-weight:700}
+.det .meta{font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.6}
+.det .acts{display:flex;gap:8px;margin-top:10px}
+.abtn{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 0;font-size:12.5px;font-weight:700;color:var(--ink)}
+.abtn.warn{color:var(--danger);border-color:#e8cfc3}
+.abtn.ok{color:var(--accent2);border-color:#cfdcc8}
+.empty{text-align:center;color:var(--sub);padding:56px 0;font-size:13px;line-height:2}
+.empty .big{font-size:34px}
+
+/* ===== FAB ===== */
+#fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 18px);z-index:40;border:0;border-radius:99px;background:var(--accent);color:#fff;font-size:15px;font-weight:800;padding:15px 22px;box-shadow:0 6px 18px rgba(58,82,50,.4);display:flex;align-items:center;gap:7px}
+#fab:active{transform:scale(.96)}
+
+/* ===== モーダル共通 ===== */
+.mwrap{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(46,42,34,.45)}
+.mwrap.show{display:flex}
+.modal{background:var(--card);width:100%;max-width:640px;max-height:88vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;animation:up .18s ease}
+@media(min-width:700px){.mwrap{align-items:center}.modal{border-radius:20px}}
+@keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.mhead{display:flex;align-items:center;padding:16px 18px 10px}
+.mhead h2{font-size:16px;font-weight:800;flex:1}
+.mx{border:0;background:var(--chip);border-radius:99px;width:32px;height:32px;font-size:14px;color:var(--sub)}
+.mbody{overflow-y:auto;padding:2px 18px 18px;-webkit-overflow-scrolling:touch}
+.fld{margin-bottom:13px}
+.fld label{display:block;font-size:12px;font-weight:800;color:var(--sub);margin-bottom:5px}
+.fld label em{color:var(--danger);font-style:normal;margin-left:2px}
+.fld input[type=text],.fld select,.fld textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:11px;background:#fff;outline:none}
+.fld textarea{min-height:64px;resize:vertical;line-height:1.5}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--accent)}
+.fld .hint{font-size:10.5px;color:var(--sub);margin-top:4px}
+.pinrow{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;padding:4px 0}
+.pinrow input{width:19px;height:19px;accent-color:var(--accent)}
+.msave{width:100%;border:0;border-radius:13px;background:var(--accent);color:#fff;font-size:15px;font-weight:800;padding:14px 0;margin-top:4px}
+.msave:disabled{opacity:.5}
+.merr{color:var(--danger);font-size:12px;font-weight:700;text-align:center;min-height:18px;padding-top:6px}
+
+/* ===== 履歴 ===== */
+.hitem{border-bottom:1px solid var(--line);padding:11px 2px;font-size:12.5px;line-height:1.6}
+.hitem .op{font-weight:800;padding:2px 8px;border-radius:99px;font-size:10.5px;color:#fff;background:var(--accent);margin-right:6px}
+.hitem .op.del{background:var(--danger)}
+.hitem .op.chg{background:#a3803d}
+.hitem .when{color:var(--sub);font-size:10.5px}
+.hitem .diff{color:var(--sub);font-size:11.5px;margin-top:3px;word-break:break-all}
+
+/* ===== ログインゲート ===== */
+#gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;padding:22px}
+.gcard{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:30px 24px;width:100%;max-width:360px;box-shadow:0 10px 40px rgba(46,42,34,.12);text-align:center}
+.gcard .logo{font-size:40px}
+.gcard h1{font-size:17px;font-weight:800;margin:8px 0 2px}
+.gcard p{font-size:11.5px;color:var(--sub);margin-bottom:18px}
+.gcard input{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:11px;margin-bottom:10px;outline:none;background:#fff}
+.gcard input:focus{border-color:var(--accent)}
+.pwrow{position:relative}
+.pwrow button{position:absolute;right:4px;top:4px;border:0;background:none;font-size:15px;padding:8px}
+.gkeep{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--sub);margin:4px 0 14px}
+.gkeep input{width:16px;height:16px;accent-color:var(--accent)}
+#gateBtn{width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font-size:15px;font-weight:800;padding:13px 0}
+#gateErr{color:var(--danger);font-size:12px;font-weight:700;min-height:18px;margin-top:10px}
+
+/* ===== トースト ===== */
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 86px);transform:translateX(-50%) translateY(20px);z-index:80;background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:99px;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.spin{display:inline-block;width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;margin-bottom:12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ttl">📖 社内ルールブック<small>HAYASHI LUMBER — 社内レギュレーション</small></div>
+  <button id="srcBadge">…</button>
+  <button class="hbtn" id="histBtn">🕐 履歴</button>
+  <a class="hbtn" id="sheetBtn" target="_blank" style="display:none">📊</a>
+</header>
+
+<div class="tools">
+  <div class="searchwrap">
+    <span class="ic">🔍</span>
+    <input id="q" type="search" placeholder="検索（対象・キーワード…「磐田」「送料」など）" autocomplete="off">
+    <button id="qClear">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="subrow">
+    <span id="count"></span>
+    <label class="deadtgl"><input type="checkbox" id="showDead">廃止も表示</label>
+  </div>
+</div>
+
+<main id="list"></main>
+
+<button id="fab">＋ ルールを追加</button>
+
+<!-- 追加・編集モーダル -->
+<div class="mwrap" id="editWrap">
+  <div class="modal">
+    <div class="mhead"><h2 id="emTitle">ルールを追加</h2><button class="mx" data-close="editWrap">✕</button></div>
+    <div class="mbody">
+      <div class="fld"><label>カテゴリ<em>*</em></label><select id="fCat"></select></div>
+      <div class="fld"><label>対象（顧客・市場・チャネルなど）</label><input type="text" id="fTarget" placeholder="例：磐田市内の木材市場 ／ 全顧客 ／ ヤフー店"></div>
+      <div class="fld"><label>タイトル（ひと言でルール）<em>*</em></label><input type="text" id="fTitle" placeholder="例：10束以下の納品は送料一律2,000円"></div>
+      <div class="fld"><label>条件（いつ・どんな場合）</label><textarea id="fCond" placeholder="例：磐田市内の木材市場への納品で、数量が10束以下のとき"></textarea></div>
+      <div class="fld"><label>内容（どうする）<em>*</em></label><textarea id="fBody" placeholder="例：送料として一律2,000円が発生する"></textarea></div>
+      <div class="fld"><label>補足・例外</label><textarea id="fNote" placeholder="例外や根拠、決めた経緯など（任意）"></textarea></div>
+      <div class="pinrow"><input type="checkbox" id="fPin"><label for="fPin">📌 よく使うルール（一番上に固定）</label></div>
+      <div class="merr" id="fErr"></div>
+      <button class="msave" id="fSave">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 履歴モーダル -->
+<div class="mwrap" id="histWrap">
+  <div class="modal">
+    <div class="mhead"><h2>🕐 変更履歴</h2><button class="mx" data-close="histWrap">✕</button></div>
+    <div class="mbody" id="histBody"><div class="empty"><div class="spin"></div>読み込み中…</div></div>
+  </div>
+</div>
+
+<!-- ログインゲート -->
+<div id="gate">
+  <div class="gcard">
+    <div class="logo">📖</div>
+    <h1>社内ルールブック</h1>
+    <p>林材木店の社内レギュレーション共有ツール</p>
+    <input id="gateMail" type="email" placeholder="メールアドレス" autocomplete="username">
+    <div class="pwrow">
+      <input id="gatePass" type="password" placeholder="パスワード" autocomplete="current-password">
+      <button id="pwEye" type="button">👁</button>
+    </div>
+    <label class="gkeep"><input type="checkbox" id="gateKeep" checked>この端末でログインを保持する</label>
+    <button id="gateBtn">ログイン</button>
+    <div id="gateErr"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ===== 接続設定 ===== */
+const GAS_URL="https://script.google.com/macros/s/AKfycbz3brmbSgxDDQc94gS7TyXu_ZHoDd8K5S_ZwiL8miutp9lqc6UPH0VEXt-luIBnmMKqFg/exec";
+const CRED_KEY="hayazai_rulebook_cred";
+const CACHE_KEY="hayazai_rulebook_cache";
+
+/* ===== カテゴリ定義 ===== */
+const CATS=[
+  {key:"配送・送料", emoji:"🚚", color:"#4a6741"},
+  {key:"価格・値引き", emoji:"💰", color:"#a3803d"},
+  {key:"支払・請求", emoji:"🧾", color:"#5b6c8f"},
+  {key:"加工",       emoji:"🪚", color:"#b3502e"},
+  {key:"梱包・出荷", emoji:"📦", color:"#7a5f43"},
+  {key:"顧客対応",   emoji:"🤝", color:"#4f7d74"},
+  {key:"その他",     emoji:"📝", color:"#8a8171"},
+];
+const catDef=k=>CATS.find(c=>c.key===k)||CATS[CATS.length-1];
+
+/* ===== 状態 ===== */
+let RULES=[];
+let FILTER={q:"", cat:"all", dead:false};
+let SHEET_URL="";
+let editingId=null;
+
+/* ===== 資格情報 ===== */
+function creds(){ try{ return JSON.parse(localStorage.getItem(CRED_KEY)||sessionStorage.getItem(CRED_KEY)||"{}"); }catch(e){ return {}; } }
+function saveCreds(email,pass,keep){ const v=JSON.stringify({email,pass}); if(keep){ localStorage.setItem(CRED_KEY,v); sessionStorage.removeItem(CRED_KEY); } else { sessionStorage.setItem(CRED_KEY,v); localStorage.removeItem(CRED_KEY); } }
+function clearCreds(){ localStorage.removeItem(CRED_KEY); sessionStorage.removeItem(CRED_KEY); localStorage.removeItem(CACHE_KEY); }
+function authQS(){ const c=creds(); return "email="+encodeURIComponent(c.email||"")+"&pass="+encodeURIComponent(c.pass||""); }
+
+/* ===== ユーティリティ ===== */
+const $=id=>document.getElementById(id);
+function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+function norm(s){ return String(s??"").normalize("NFKC").toLowerCase().replace(/\s+/g,""); }
+// UTF-8→base64（GASのPOST文字化け対策：本文はbase64で送る）
+function b64utf8(s){ const b=new TextEncoder().encode(s); let x=""; for(let i=0;i<b.length;i+=0x8000){ x+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000)); } return btoa(x); }
+let toastTimer=null;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),2200); }
+
+/* ===== 起動 ===== */
+function boot(){
+  buildChips(); buildCatSelect();
+  const c=creds();
+  if(c.email&&c.pass){
+    $("gate").style.display="none";
+    const cache=loadCache();
+    if(cache){ RULES=cache.rules||[]; SHEET_URL=cache.sheetUrl||""; render(); }
+    else showLoadingList();
+    fetchRules();
+  } else showGate();
+}
+function showGate(err){ $("gate").style.display="flex"; $("gateErr").textContent=err||""; setTimeout(()=>$("gateMail").focus(),60); }
+$("pwEye").onclick=()=>{ const i=$("gatePass"); const s=i.type==="password"; i.type=s?"text":"password"; $("pwEye").textContent=s?"🙈":"👁"; };
+["gateMail","gatePass"].forEach(id=>$(id).addEventListener("keydown",e=>{ if(e.key==="Enter") submitGate(); }));
+$("gateBtn").onclick=submitGate;
+function submitGate(){
+  const email=$("gateMail").value.trim(), pass=$("gatePass").value;
+  if(!email||!pass) return;
+  saveCreds(email,pass,$("gateKeep").checked);
+  $("gate").style.display="none";
+  showLoadingList();
+  fetchRules();
+}
+$("srcBadge").onclick=()=>{ if(confirm("ログアウトしますか？")){ clearCreds(); location.reload(); } };
+
+function showLoadingList(){ $("list").innerHTML='<div class="empty"><div class="spin"></div>ルールを読み込み中…<br><span style="font-size:10.5px">初回は20秒ほどかかることがあります</span></div>'; }
+function setBadge(state){ const b=$("srcBadge"); if(state==="live"){ b.className=""; b.textContent="● ライブ"; } else if(state==="load"){ b.className=""; b.textContent="● 読込中…"; } else { b.className="err"; b.textContent="● オフライン"; } }
+
+/* ===== データ取得 ===== */
+async function fetchOnce(url,ms){
+  const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),ms);
+  try{ const r=await fetch(url,{signal:ctrl.signal}); const t=await r.text(); if(!t||t.trim()[0]!=="{") throw new Error("bad response"); return JSON.parse(t); }
+  finally{ clearTimeout(to); }
+}
+async function fetchRules(){
+  setBadge("load");
+  let j=null;
+  for(let i=0;i<3&&!j;i++){ try{ j=await fetchOnce(GAS_URL+"?api=rules&"+authQS(), i===0?25000:12000); }catch(e){ j=null; } }
+  if(!j){ setBadge("err"); if(!RULES.length) $("list").innerHTML='<div class="empty"><div class="big">📡</div>読み込みに失敗しました<br><button class="abtn" style="max-width:200px;margin:14px auto 0;display:block" onclick="fetchRules()">再読み込み</button></div>'; return; }
+  if(!j.ok){ if(j.error==="unauthorized"){ clearCreds(); showGate("メールまたはパスワードが違います"); } else { setBadge("err"); toast("エラー: "+(j.error||"不明")); } return; }
+  RULES=j.rules||[]; SHEET_URL=j.sheetUrl||"";
+  try{ localStorage.setItem(CACHE_KEY,JSON.stringify({rules:RULES,sheetUrl:SHEET_URL})); }catch(e){}
+  const sb=$("sheetBtn"); if(SHEET_URL){ sb.href=SHEET_URL; sb.style.display=""; }
+  setBadge("live"); render();
+}
+function loadCache(){ try{ const s=localStorage.getItem(CACHE_KEY); return s?JSON.parse(s):null; }catch(e){ return null; } }
+
+/* ===== フィルタ・描画 ===== */
+function buildChips(){
+  const wrap=$("chips");
+  wrap.innerHTML="";
+  const mk=(key,label)=>{ const b=document.createElement("button"); b.className="chip"+(FILTER.cat===key?" on":""); b.innerHTML=label; b.onclick=()=>{ FILTER.cat=key; render(); }; wrap.appendChild(b); };
+  const cnt=k=>RULES.filter(r=>(FILTER.dead||r.status!=="廃止")&&(k==="all"||r.cat===k)).length;
+  mk("all","すべて<span class='n'>"+cnt("all")+"</span>");
+  CATS.forEach(c=>mk(c.key,c.emoji+" "+esc(c.key)+"<span class='n'>"+cnt(c.key)+"</span>"));
+}
+function buildCatSelect(){ $("fCat").innerHTML=CATS.map(c=>`<option value="${esc(c.key)}">${c.emoji} ${esc(c.key)}</option>`).join(""); }
+
+function matches(r){
+  if(!FILTER.dead && r.status==="廃止") return false;
+  if(FILTER.cat!=="all" && r.cat!==FILTER.cat) return false;
+  // 空白区切りでAND検索（normは語内の空白しか消さないよう、分割してから正規化する）
+  const words=String(FILTER.q||"").split(/[\s　、,]+/).map(norm).filter(Boolean);
+  if(!words.length) return true;
+  const hay=norm([r.target,r.title,r.cond,r.body,r.note,r.cat].join("|"));
+  return words.every(w=>hay.includes(w));
+}
+function catOrder(k){ const i=CATS.findIndex(c=>c.key===k); return i<0?99:i; }
+
+function render(){
+  buildChips();
+  const list=$("list");
+  const rs=RULES.filter(matches).sort((a,b)=>{
+    if(a.pin!==b.pin) return a.pin?-1:1;
+    const co=catOrder(a.cat)-catOrder(b.cat); if(co) return co;
+    return String(b.updatedAt).localeCompare(String(a.updatedAt));
+  });
+  $("count").textContent=rs.length+"件";
+  if(!rs.length){
+    list.innerHTML=RULES.length
+      ? '<div class="empty"><div class="big">🔍</div>該当するルールがありません</div>'
+      : '<div class="empty"><div class="big">📖</div>まだルールがありません<br>右下の「＋ ルールを追加」から登録できます</div>';
+    return;
+  }
+  const grouped=(FILTER.cat==="all" && !norm(FILTER.q));
+  let html="", lastSec=null;
+  rs.forEach(r=>{
+    if(grouped){
+      const sec=r.pin?"📌 よく使うルール":catDef(r.cat).emoji+" "+r.cat;
+      if(sec!==lastSec){ html+=`<div class="sechead">${esc(sec)}</div>`; lastSec=sec; }
+    }
+    html+=cardHTML(r);
+  });
+  list.innerHTML=html;
+}
+function cardHTML(r){
+  const c=catDef(r.cat);
+  const dead=r.status==="廃止";
+  return `<div class="card${dead?" dead":""}" style="--cc:${c.color}" onclick="this.classList.toggle('open')">
+    <div class="top">
+      <span class="badge">${c.emoji} ${esc(r.cat)}</span>
+      ${r.target?`<span class="tgt">${esc(r.target)}</span>`:""}
+      ${r.pin?'<span class="pin">📌</span>':""}
+      ${dead?'<span class="deadmark">廃止</span>':""}
+    </div>
+    <h3>${esc(r.title)}</h3>
+    ${r.body?`<div class="body">${esc(r.body)}</div>`:""}
+    <div class="det" onclick="event.stopPropagation()">
+      ${r.cond?`<div class="row"><b>条件</b>${esc(r.cond)}</div>`:""}
+      ${r.note?`<div class="row"><b>補足</b>${esc(r.note)}</div>`:""}
+      <div class="meta">${esc(r.id)}　登録: ${esc(r.createdBy)} ${esc(r.createdAt)}${r.updatedAt!==r.createdAt?`　更新: ${esc(r.updatedBy)} ${esc(r.updatedAt)}`:""}</div>
+      <div class="acts">
+        <button class="abtn" onclick="openEdit('${esc(r.id)}')">✏️ 編集</button>
+        ${dead
+          ? `<button class="abtn ok" onclick="setStatus('${esc(r.id)}','有効')">♻️ 復活させる</button>`
+          : `<button class="abtn warn" onclick="setStatus('${esc(r.id)}','廃止')">🗑 廃止にする</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ===== 検索 ===== */
+$("q").addEventListener("input",()=>{ FILTER.q=$("q").value; $("qClear").style.display=FILTER.q?"block":"none"; render(); });
+$("qClear").onclick=()=>{ $("q").value=""; FILTER.q=""; $("qClear").style.display="none"; render(); };
+$("showDead").addEventListener("change",()=>{ FILTER.dead=$("showDead").checked; render(); });
+
+/* ===== 追加・編集 ===== */
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove("show"));
+document.querySelectorAll(".mwrap").forEach(w=>w.addEventListener("click",e=>{ if(e.target===w) w.classList.remove("show"); }));
+$("fab").onclick=()=>{ editingId=null; $("emTitle").textContent="ルールを追加"; ["fTarget","fTitle","fCond","fBody","fNote"].forEach(id=>$(id).value=""); $("fCat").value=CATS[0].key; $("fPin").checked=false; $("fErr").textContent=""; $("editWrap").classList.add("show"); };
+function openEdit(id){
+  const r=RULES.find(x=>x.id===id); if(!r) return;
+  editingId=id;
+  $("emTitle").textContent="ルールを編集（"+id+"）";
+  $("fCat").value=r.cat||CATS[CATS.length-1].key;
+  $("fTarget").value=r.target||""; $("fTitle").value=r.title||"";
+  $("fCond").value=r.cond||""; $("fBody").value=r.body||""; $("fNote").value=r.note||"";
+  $("fPin").checked=!!r.pin; $("fErr").textContent="";
+  $("editWrap").classList.add("show");
+}
+async function postAction(payload){
+  const c=creds();
+  const body=b64utf8(JSON.stringify({...payload,email:c.email,pass:c.pass}));
+  const r=await fetch(GAS_URL,{method:"POST",body:body});
+  const t=await r.text();
+  if(!t||t.trim()[0]!=="{") throw new Error("bad response");
+  return JSON.parse(t);
+}
+$("fSave").onclick=async()=>{
+  const rule={
+    id:editingId||"", cat:$("fCat").value, target:$("fTarget").value.trim(), title:$("fTitle").value.trim(),
+    cond:$("fCond").value.trim(), body:$("fBody").value.trim(), note:$("fNote").value.trim(),
+    status:editingId?(RULES.find(x=>x.id===editingId)?.status||"有効"):"有効", pin:$("fPin").checked,
+  };
+  if(!rule.title){ $("fErr").textContent="タイトルを入力してください"; return; }
+  if(!rule.body){ $("fErr").textContent="内容を入力してください"; return; }
+  const btn=$("fSave"); btn.disabled=true; btn.textContent="保存中…"; $("fErr").textContent="";
+  try{
+    const j=await postAction({action:"save",rule});
+    if(!j.ok) throw new Error(j.error||"保存できませんでした");
+    $("editWrap").classList.remove("show");
+    toast(editingId?"更新しました":"追加しました（"+j.id+"）");
+    await fetchRules();
+  }catch(e){ $("fErr").textContent="保存エラー: "+e.message; }
+  finally{ btn.disabled=false; btn.textContent="保存する"; }
+};
+async function setStatus(id,status){
+  const r=RULES.find(x=>x.id===id); if(!r) return;
+  if(status==="廃止" && !confirm("「"+r.title+"」を廃止にしますか？\n（削除ではなく非表示になり、後から復活できます）")) return;
+  try{
+    const j=await postAction({action:"save",rule:{...r,status}});
+    if(!j.ok) throw new Error(j.error||"失敗");
+    toast(status==="廃止"?"廃止にしました":"復活させました");
+    await fetchRules();
+  }catch(e){ toast("エラー: "+e.message); }
+}
+
+/* ===== 履歴 ===== */
+$("histBtn").onclick=async()=>{
+  $("histWrap").classList.add("show");
+  $("histBody").innerHTML='<div class="empty"><div class="spin"></div>読み込み中…</div>';
+  try{
+    const j=await fetchOnce(GAS_URL+"?api=history&"+authQS(),20000);
+    if(!j.ok) throw new Error(j.error||"取得失敗");
+    if(!j.items.length){ $("histBody").innerHTML='<div class="empty">まだ履歴がありません</div>'; return; }
+    $("histBody").innerHTML=j.items.map(it=>{
+      const cls=it.op==="廃止"?"del":(it.op==="追加"?"":"chg");
+      return `<div class="hitem"><span class="op ${cls}">${esc(it.op)}</span><b>${esc(it.title)}</b>
+        <span class="when">　${esc(it.at)}・${esc(it.by)}・${esc(it.id)}</span>
+        ${it.diff?`<div class="diff">${esc(it.diff)}</div>`:""}</div>`;
+    }).join("");
+  }catch(e){ $("histBody").innerHTML='<div class="empty">履歴を取得できませんでした</div>'; }
+};
+
+boot();
+</script>
+</body>
+</html>
