@@ -59,6 +59,8 @@ main{padding:4px 14px 0;max-width:760px;margin:0 auto}
 .tgt{font-size:11px;font-weight:700;color:var(--accent2);background:var(--hl);border:1px solid var(--line);border-radius:99px;padding:3px 9px}
 .pin{font-size:12px}
 .deadmark{font-size:10.5px;font-weight:800;color:#fff;background:var(--danger);border-radius:99px;padding:3px 8px}
+.todobadge{font-size:10.5px;font-weight:800;color:#8a6d1f;background:#f7edcf;border:1px solid #e3d09a;border-radius:99px;padding:3px 8px}
+.card .body.todo{background:#fbf7ea;border:1.5px dashed #d9c489;color:var(--sub)}
 .card h3{font-size:15px;font-weight:800;line-height:1.45}
 .card .body{margin-top:7px;font-size:13.5px;line-height:1.55;background:var(--hl);border-radius:9px;padding:8px 11px}
 .card .det{display:none;margin-top:9px}
@@ -148,7 +150,10 @@ main{padding:4px 14px 0;max-width:760px;margin:0 auto}
   <div class="chips" id="chips"></div>
   <div class="subrow">
     <span id="count"></span>
-    <label class="deadtgl"><input type="checkbox" id="showDead">廃止も表示</label>
+    <span style="display:flex;gap:12px">
+      <label class="deadtgl"><input type="checkbox" id="onlyTodo">✍️ 要記入のみ</label>
+      <label class="deadtgl"><input type="checkbox" id="showDead">廃止も表示</label>
+    </span>
   </div>
 </div>
 
@@ -221,7 +226,7 @@ const catDef=k=>CATS.find(c=>c.key===k)||CATS[CATS.length-1];
 
 /* ===== 状態 ===== */
 let RULES=[];
-let FILTER={q:"", cat:"all", dead:false};
+let FILTER={q:"", cat:"all", dead:false, todo:false};
 let SHEET_URL="";
 let editingId=null;
 
@@ -299,8 +304,11 @@ function buildChips(){
 }
 function buildCatSelect(){ $("fCat").innerHTML=CATS.map(c=>`<option value="${esc(c.key)}">${c.emoji} ${esc(c.key)}</option>`).join(""); }
 
+// 「（要記入）」が内容に残っている＝まだ回答が書かれていない質問
+function isTodo(r){ return /（要記入）|\(要記入\)/.test(r.body||""); }
 function matches(r){
   if(!FILTER.dead && r.status==="廃止") return false;
+  if(FILTER.todo && !isTodo(r)) return false;
   if(FILTER.cat!=="all" && r.cat!==FILTER.cat) return false;
   // 空白区切りでAND検索（normは語内の空白しか消さないよう、分割してから正規化する）
   const words=String(FILTER.q||"").split(/[\s　、,]+/).map(norm).filter(Boolean);
@@ -318,7 +326,8 @@ function render(){
     const co=catOrder(a.cat)-catOrder(b.cat); if(co) return co;
     return String(b.updatedAt).localeCompare(String(a.updatedAt));
   });
-  $("count").textContent=rs.length+"件";
+  const todoN=rs.filter(isTodo).length;
+  $("count").textContent=rs.length+"件"+(todoN?"（うち要記入 "+todoN+"）":"");
   if(!rs.length){
     list.innerHTML=RULES.length
       ? '<div class="empty"><div class="big">🔍</div>該当するルールがありません</div>'
@@ -344,10 +353,11 @@ function cardHTML(r){
       <span class="badge">${c.emoji} ${esc(r.cat)}</span>
       ${r.target?`<span class="tgt">${esc(r.target)}</span>`:""}
       ${r.pin?'<span class="pin">📌</span>':""}
+      ${isTodo(r)?'<span class="todobadge">✍️ 要記入</span>':""}
       ${dead?'<span class="deadmark">廃止</span>':""}
     </div>
     <h3>${esc(r.title)}</h3>
-    ${r.body?`<div class="body">${esc(r.body)}</div>`:""}
+    ${r.body?`<div class="body${isTodo(r)?" todo":""}">${esc(r.body)}</div>`:""}
     <div class="det" onclick="event.stopPropagation()">
       ${r.cond?`<div class="row"><b>条件</b>${esc(r.cond)}</div>`:""}
       ${r.note?`<div class="row"><b>補足</b>${esc(r.note)}</div>`:""}
@@ -366,6 +376,7 @@ function cardHTML(r){
 $("q").addEventListener("input",()=>{ FILTER.q=$("q").value; $("qClear").style.display=FILTER.q?"block":"none"; render(); });
 $("qClear").onclick=()=>{ $("q").value=""; FILTER.q=""; $("qClear").style.display="none"; render(); };
 $("showDead").addEventListener("change",()=>{ FILTER.dead=$("showDead").checked; render(); });
+$("onlyTodo").addEventListener("change",()=>{ FILTER.todo=$("onlyTodo").checked; render(); });
 
 /* ===== 追加・編集 ===== */
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove("show"));
