@@ -61,6 +61,9 @@ main{padding:4px 14px 0;max-width:760px;margin:0 auto}
 .deadmark{font-size:10.5px;font-weight:800;color:#fff;background:var(--danger);border-radius:99px;padding:3px 8px}
 .todobadge{font-size:10.5px;font-weight:800;color:#8a6d1f;background:#f7edcf;border:1px solid #e3d09a;border-radius:99px;padding:3px 8px}
 .card .body.todo{background:#fbf7ea;border:1.5px dashed #d9c489;color:var(--sub)}
+.aibadge{font-size:10.5px;font-weight:800;color:#5b4a8a;background:#eeeaf8;border:1px solid #cfc4e8;border-radius:99px;padding:3px 8px}
+.card .body.ai{background:#f6f3fc;border:1.5px dashed #b7aed6}
+.abtn.approve{background:var(--accent);border-color:var(--accent);color:#fff}
 .card h3{font-size:15px;font-weight:800;line-height:1.45}
 .card .body{margin-top:7px;font-size:13.5px;line-height:1.55;background:var(--hl);border-radius:9px;padding:8px 11px}
 .card .det{display:none;margin-top:9px}
@@ -151,7 +154,7 @@ main{padding:4px 14px 0;max-width:760px;margin:0 auto}
   <div class="subrow">
     <span id="count"></span>
     <span style="display:flex;gap:12px">
-      <label class="deadtgl"><input type="checkbox" id="onlyTodo">✍️ 要記入のみ</label>
+      <label class="deadtgl"><input type="checkbox" id="onlyTodo">✍️ 未確定のみ</label>
       <label class="deadtgl"><input type="checkbox" id="showDead">廃止も表示</label>
     </span>
   </div>
@@ -304,8 +307,10 @@ function buildChips(){
 }
 function buildCatSelect(){ $("fCat").innerHTML=CATS.map(c=>`<option value="${esc(c.key)}">${c.emoji} ${esc(c.key)}</option>`).join(""); }
 
-// 「（要記入）」が内容に残っている＝まだ回答が書かれていない質問
-function isTodo(r){ return /（要記入）|\(要記入\)/.test(r.body||""); }
+// 未確定＝「（要記入）」（回答なし）または「（AI予想）」（AIの予想回答・承認待ち）
+function isAI(r){ return /^（AI予想）/.test(r.body||""); }
+function isBlank(r){ return /（要記入）|\(要記入\)/.test(r.body||""); }
+function isTodo(r){ return isAI(r)||isBlank(r); }
 function matches(r){
   if(!FILTER.dead && r.status==="廃止") return false;
   if(FILTER.todo && !isTodo(r)) return false;
@@ -326,8 +331,9 @@ function render(){
     const co=catOrder(a.cat)-catOrder(b.cat); if(co) return co;
     return String(b.updatedAt).localeCompare(String(a.updatedAt));
   });
-  const todoN=rs.filter(isTodo).length;
-  $("count").textContent=rs.length+"件"+(todoN?"（うち要記入 "+todoN+"）":"");
+  const aiN=rs.filter(isAI).length, blankN=rs.filter(r=>!isAI(r)&&isBlank(r)).length;
+  const parts=[]; if(aiN) parts.push("AI予想 "+aiN); if(blankN) parts.push("要記入 "+blankN);
+  $("count").textContent=rs.length+"件"+(parts.length?"（"+parts.join("・")+"）":"");
   if(!rs.length){
     list.innerHTML=RULES.length
       ? '<div class="empty"><div class="big">🔍</div>該当するルールがありません</div>'
@@ -353,17 +359,18 @@ function cardHTML(r){
       <span class="badge">${c.emoji} ${esc(r.cat)}</span>
       ${r.target?`<span class="tgt">${esc(r.target)}</span>`:""}
       ${r.pin?'<span class="pin">📌</span>':""}
-      ${isTodo(r)?'<span class="todobadge">✍️ 要記入</span>':""}
+      ${isAI(r)?'<span class="aibadge">🤖 AI予想・承認待ち</span>':(isBlank(r)?'<span class="todobadge">✍️ 要記入</span>':"")}
       ${dead?'<span class="deadmark">廃止</span>':""}
     </div>
     <h3>${esc(r.title)}</h3>
-    ${r.body?`<div class="body${isTodo(r)?" todo":""}">${esc(r.body)}</div>`:""}
+    ${r.body?`<div class="body${isAI(r)?" ai":(isBlank(r)?" todo":"")}">${esc(r.body)}</div>`:""}
     <div class="det" onclick="event.stopPropagation()">
       ${r.cond?`<div class="row"><b>条件</b>${esc(r.cond)}</div>`:""}
       ${r.note?`<div class="row"><b>補足</b>${esc(r.note)}</div>`:""}
       <div class="meta">${esc(r.id)}　登録: ${esc(r.createdBy)} ${esc(r.createdAt)}${r.updatedAt!==r.createdAt?`　更新: ${esc(r.updatedBy)} ${esc(r.updatedAt)}`:""}</div>
       <div class="acts">
-        <button class="abtn" onclick="openEdit('${esc(r.id)}')">✏️ 編集</button>
+        ${isAI(r)&&!dead?`<button class="abtn approve" onclick="approveRule('${esc(r.id)}')">✅ この回答で承認</button>`:""}
+        <button class="abtn" onclick="openEdit('${esc(r.id)}')">✏️ ${isAI(r)?"修正する":"編集"}</button>
         ${dead
           ? `<button class="abtn ok" onclick="setStatus('${esc(r.id)}','有効')">♻️ 復活させる</button>`
           : `<button class="abtn warn" onclick="setStatus('${esc(r.id)}','廃止')">🗑 廃止にする</button>`}
@@ -388,7 +395,9 @@ function openEdit(id){
   $("emTitle").textContent="ルールを編集（"+id+"）";
   $("fCat").value=r.cat||CATS[CATS.length-1].key;
   $("fTarget").value=r.target||""; $("fTitle").value=r.title||"";
-  $("fCond").value=r.cond||""; $("fBody").value=r.body||""; $("fNote").value=r.note||"";
+  $("fCond").value=r.cond||"";
+  // AI予想は先頭マーカーを外した状態で編集開始（保存すればそのまま確定になる）
+  $("fBody").value=(r.body||"").replace(/^（AI予想）\s*/,""); $("fNote").value=r.note||"";
   $("fPin").checked=!!r.pin; $("fErr").textContent="";
   $("editWrap").classList.add("show");
 }
@@ -418,6 +427,17 @@ $("fSave").onclick=async()=>{
   }catch(e){ $("fErr").textContent="保存エラー: "+e.message; }
   finally{ btn.disabled=false; btn.textContent="保存する"; }
 };
+// AI予想をそのまま正式ルールとして確定（マーカーを外して保存＝履歴に承認者が残る）
+async function approveRule(id){
+  const r=RULES.find(x=>x.id===id); if(!r) return;
+  const body=(r.body||"").replace(/^（AI予想）\s*/,"");
+  try{
+    const j=await postAction({action:"save",rule:{...r,body}});
+    if(!j.ok) throw new Error(j.error||"失敗");
+    toast("✅ 承認しました");
+    await fetchRules();
+  }catch(e){ toast("エラー: "+e.message); }
+}
 async function setStatus(id,status){
   const r=RULES.find(x=>x.id===id); if(!r) return;
   if(status==="廃止" && !confirm("「"+r.title+"」を廃止にしますか？\n（削除ではなく非表示になり、後から復活できます）")) return;
